@@ -8,18 +8,28 @@ import { items } from "./movies.json"
 // import { StarIcon } from "@heroicons/vue/24/solid";
 console.log("Movies Items ", items)
 const movies = reactive(items)
+const ratingMovie = (star,index) => {
+    if(movies[index].rating != star){
+            movies[index].rating = star
+    }
+}
+const configureClass = (star, movie) => {
+    const color = star <= movie.rating ? 'text-orange-300' : 'text-gray-300'
+    const pointer = star == movie.rating ? 'cursor-not-allowed' : 'cursor-pointer'
+    return `${color} ${pointer}`
+}
 </script>
 
 <template>
     <!-- This is where your template goes	-->
-    <div class="bg-slate-950 h-screen">
+    <div class="bg-slate-950">
         <div class="grid grid-cols-3 p-20 gap-3">
             <template v-for="(movie, index) in movies" :key="index">
                 <div class="flex flex-col gap-2 rounded bg-white">
-                    <div class="" style="height: 475px;" >
+                    <div class="wallpaper" >
                         <img :src="movie.image" alt="">
                     </div> 
-                    <div class="flex flex-col gap-1 bg-white p-3 h-full">
+                    <div class="flex flex-auto flex-col gap-1 bg-white p-3">
                         <h3 class="text-xl">{{ movie.name }}</h3>
                         <div class="flex gap-2">
                             <span class=" bg-blue-600 rounded-full px-3 text-white" v-for="(cat,catIndex) in movie.genres" :key="catIndex">{{ cat }}</span>
@@ -28,7 +38,15 @@ const movies = reactive(items)
                         <div class="flex h-full gap-2 items-end">
                             <small>Rating: ({{ movie.rating }}/5)</small>
                             <div class="flex gap-1">
-                                <small v-for="(star) in movie.rating" :key="star" class="text-orange-300">&#9733;</small>
+                                <small 
+                                    v-for="(star) in 5" 
+                                    :key="star" 
+                                    class="cursor-pointer" 
+                                    :class="configureClass(star, movie)"
+                                    @click="ratingMovie(star, index)"
+                                >
+                                    &#9733;
+                                </small>
                             </div>
                         </div>
                     </div>
@@ -37,3 +55,10 @@ const movies = reactive(items)
         </div>
     </div>
 </template>
+
+<style>
+    .wallpaper{
+        height: 700px;
+        overflow: hidden;
+    }
+</style>
