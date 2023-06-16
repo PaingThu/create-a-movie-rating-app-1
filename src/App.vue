@@ -16,13 +16,13 @@ const updateRating = (star,index) => {
 
 <template>
     <!-- This is where your template goes	-->
-    <div class="bg-slate-950">
-        <div class="grid grid-cols-3 p-20 gap-3">
+    <div class="bg-slate-950 min-h-screen">
+        <div class="grid grid-cols-3 p-12 gap-10">
             <template v-for="(movie, index) in movies" :key="index">
                 <div class="flex flex-col gap-2 rounded bg-white">
                     <div class="wallpaper relative" >
                         <img :src="movie.image" alt="">
-                        <div class="absolute top-[1rem] right-10">
+                        <div v-if="movie.rating" class="absolute top-[1rem] right-10">
                             <div class="rating-star relative">
                                 <span class="star text-orange-300 text-6xl">&#9733;</span>
                                 <span class="number text-white">{{ movie.rating }}</span>
@@ -61,7 +61,7 @@ const updateRating = (star,index) => {
 
 <style>
     .wallpaper{
-        height: 700px;
+        height: 655px;
         overflow: hidden;
     }
     .rating-star .number{
