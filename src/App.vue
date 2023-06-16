@@ -6,7 +6,6 @@ import { items } from "./movies.json"
  otherwise you could just use a simple ⭐️ emoji, or * character.
 */
 // import { StarIcon } from "@heroicons/vue/24/solid";
-console.log("Movies Items ", items)
 const movies = reactive(items)
 const updateRating = (star,index) => {
     if(movies[index].rating != star){
@@ -21,8 +20,14 @@ const updateRating = (star,index) => {
         <div class="grid grid-cols-3 p-20 gap-3">
             <template v-for="(movie, index) in movies" :key="index">
                 <div class="flex flex-col gap-2 rounded bg-white">
-                    <div class="wallpaper" >
+                    <div class="wallpaper relative" >
                         <img :src="movie.image" alt="">
+                        <div class="absolute top-[1rem] right-10">
+                            <div class="rating-star relative">
+                                <span class="star text-orange-300 text-6xl">&#9733;</span>
+                                <span class="number text-white">{{ movie.rating }}</span>
+                            </div>
+                        </div>
                     </div> 
                     <div class="flex flex-auto flex-col gap-1 bg-white p-3">
                         <h3 class="text-xl">{{ movie.name }}</h3>
@@ -58,5 +63,11 @@ const updateRating = (star,index) => {
     .wallpaper{
         height: 700px;
         overflow: hidden;
+    }
+    .rating-star .number{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
 </style>
