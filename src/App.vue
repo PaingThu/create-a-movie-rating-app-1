@@ -8,15 +8,10 @@ import { items } from "./movies.json"
 // import { StarIcon } from "@heroicons/vue/24/solid";
 console.log("Movies Items ", items)
 const movies = reactive(items)
-const ratingMovie = (star,index) => {
+const updateRating = (star,index) => {
     if(movies[index].rating != star){
-            movies[index].rating = star
+        movies[index].rating = star
     }
-}
-const configureClass = (star, movie) => {
-    const color = star <= movie.rating ? 'text-orange-300' : 'text-gray-300'
-    const pointer = star == movie.rating ? 'cursor-not-allowed' : 'cursor-pointer'
-    return `${color} ${pointer}`
 }
 </script>
 
@@ -41,9 +36,12 @@ const configureClass = (star, movie) => {
                                 <small 
                                     v-for="(star) in 5" 
                                     :key="star" 
-                                    class="cursor-pointer" 
-                                    :class="configureClass(star, movie)"
-                                    @click="ratingMovie(star, index)"
+                                    :class="[
+                                        star <= movie.rating ? 'text-orange-300' : 'text-gray-300',
+                                        star === movie.rating ? 'cursor-not-allowed' : 'cursor-pointer'
+                                    ]"
+                                    
+                                    @click="updateRating(star, index)"
                                 >
                                     &#9733;
                                 </small>
