@@ -2,6 +2,9 @@
     import { watch, ref, reactive, onMounted } from "vue"
     import { Modal } from 'flowbite'
     import { items } from "/src/movies.json"
+
+    import MovieForm from "./MovieForm.vue";
+
     const movies = ref(items)
     const avgRating = ref(0)
     
@@ -27,10 +30,19 @@
 */
 // import { StarIcon } from "@heroicons/vue/24/solid";
 
-    const updateRating = (star,index) => {
-        if(movies.value[index].rating != star){
-            movies.value[index].rating = star
-        }
+    const updateRating = (id,rating) => {
+        movies.value = movies.value.map((movie) => {
+            if (movie.id === id) {
+                movie.rating = rating;
+            }
+            return movie;
+        });
+    }
+    const removeRating = () => {
+        movies.value = movies.value.map((movie) => {
+            movie.rating = null
+            return movie;
+        });
     }
     const newMovie = ref(
         {
@@ -105,7 +117,7 @@
         const tmp = movies.value.filter(m => m.id == movieId)[0]
         Object.assign(newMovie.value, tmp)
         modifiedBtn.func = "edit"
-        modifiedBtn.label = "Edit"
+        modifiedBtn.label = "Update"
         modal.value.show()
     }
     const deleteMovie = (movieId) => {
@@ -174,12 +186,18 @@
                 <span> / </span>
                 <span>Total Rating: {{ avgRating }}</span>
             </div>
-            <button
-                @click="addNewMove"
-                class="ms-auto"
-            >
-                Add New Video
-            </button>
+            <div class="ms-auto flex gap-2">
+                <button
+                    @click="removeRating"
+                >
+                    Remove Rating
+                </button>
+                <button
+                    @click="addNewMove"
+                >
+                    Add New Video
+                </button>
+            </div>
             <div id="defaultModal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-40 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
                 <div class="relative w-full max-w-2xl max-h-full">
                     <!-- Modal content -->
@@ -250,64 +268,22 @@
                 </div>
             </div>
         </div>
-        <div class="grid grid-cols-3 gap-10 px-10">
-            <template v-for="(movie, index) in movies" :key="index">
-                <div class="flex flex-col gap-2 rounded bg-white">
-                    <div class="wallpaper relative" >
-                        <img :src="movie.image" alt="">
-                        <div v-if="movie.rating" class="absolute top-[1rem] right-10">
-                            <div class="rating-star relative">
-                                <span class="star text-orange-300 text-6xl">&#9733;</span>
-                                <span class="number text-white">{{ movie.rating }}</span>
-                            </div>
-                        </div>
-                    </div> 
-                    <div class="flex flex-auto flex-col gap-1 bg-white p-3">
-                        <h3 class="text-xl">{{ movie.name }}</h3>
-                        <div class="flex gap-2">
-                            <span class=" bg-blue-600 rounded-full px-3 text-white" v-for="(cat,catIndex) in movie.genres" :key="catIndex">{{ cat }}</span>
-                        </div>
-                        <p class="mt-2">{{ movie.description }}</p>
-                        <div class="flex h-full gap-2 items-end">
-                            <small>Rating: ({{ movie.rating }}/5)</small>
-                            <div class="flex gap-1">
-                                <small 
-                                    v-for="(star) in 5" 
-                                    :key="star" 
-                                    :class="[
-                                        star <= movie.rating ? 'text-orange-300' : 'text-gray-300',
-                                        star === movie.rating ? 'cursor-not-allowed' : 'cursor-pointer'
-                                    ]"
-                                    
-                                    @click="updateRating(star, index)"
-                                >
-                                    &#9733;
-                                </small>
-                            </div>
-                            <div class="ms-auto flex gap-2">
-                                <button @click="editMovie(movie.id)">Edit</button>
-                                <button @click="deleteMovie(movie.id)">Delete</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </template>
+        <div class="movie-list">
+            <MovieForm 
+                v-for="(movie, index) in movies" 
+                :key="index" 
+                :movie="movie" 
+                @edit="editMovie"
+                @remove="deleteMovie"
+                @update:rating="updateRating"
+            />
         </div>
     </div>
     
 </template>
 
 <style>
-    .wallpaper{
-        height: 380px;
-        overflow: hidden;
-    }
-    .rating-star .number{
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
+    
     /* .label{
         @apply text-white;
     } */
@@ -319,5 +295,8 @@
     }
     .label.error label{
         @apply text-red-400;
+    }
+    .movie-list{
+        @apply grid grid-cols-3 gap-10 px-10;
     }
 </style>
